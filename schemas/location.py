@@ -1,0 +1,48 @@
+from typing import Optional, Union, Any
+from datetime import datetime
+from uuid import UUID
+from pydantic import BaseModel
+from geojson_pydantic.geometries import Geometry, Point
+from models.document import DocumentStatus
+
+# from schemas.markup import Markup
+
+
+
+class Location(BaseModel):
+    name: Optional[str]
+    geometry: Any
+
+    class Config:
+        orm_mode = True
+
+
+class RecognitionLocationBase(BaseModel):
+    probability: float
+
+
+class RecognitionLocationCreate(RecognitionLocationBase):
+    message_id: UUID
+    name: Optional[str]
+    geometry: str
+
+
+class RecognitionLocation(RecognitionLocationBase):
+    geometry: Geometry
+    street_name: Optional[str]
+
+    class Config:
+        orm_mode = True
+
+
+class ApprovedLocationCreate(BaseModel):
+    message_id: UUID
+    name: Optional[str] #Location.name
+    geometry: str #Location.geometry
+
+
+class ApprovedLocation(BaseModel):
+    name: str #Theme.name
+    geometry: str #Location.geometry
+
+
