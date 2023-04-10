@@ -82,7 +82,7 @@ def parse_document(db, document: Document):
     Mock parser
     """
     dao_document.set_marking_up(db, uuid=document.id)
-    for i in range(0, 1):
+    for i in range(0, 3):
         msg = MessageCreate(
             text= str(i) + '_text_from_' + document.name,
             document = document
@@ -90,7 +90,7 @@ def parse_document(db, document: Document):
         msg_obj = dao_message.create(db, obj_in=msg)
         markup_message(db, msg_obj)
 
-    sleep(1)
+    sleep(10)
     dao_document.set_marked_up(db, uuid=document.id)
     return None
 
