@@ -2,6 +2,7 @@ from fastapi import Depends, FastAPI, HTTPException, Form, File, UploadFile
 import uuid
 from datetime import datetime
 from sqlalchemy.orm import Session
+from fastapi.middleware.cors import CORSMiddleware
 
 import dao, models, schemas
 from config import settings
@@ -13,10 +14,21 @@ from api.api_v1.api import api_router
 
 # Base.metadata.create_all(bind=engine)
 
+origins = [
+    "http://localhost:3000",
+    "https://nirma.lok-labs.com",
+]
+
 
 app = FastAPI(title=settings.PROJECT_NAME)
 
-
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(api_router)
 
