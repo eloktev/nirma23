@@ -37,7 +37,16 @@ def get_documents(db: Session = Depends(deps.get_db),
     # documents = crud.document.get_multi(db, skip=skip, limit=limit)
     return dao.dao_document.get_multi(db, skip=skip, limit=limit)
 
-@router.get("/{document_id}", response_class=FileResponse)
+@router.get("/{document_id}", response_model=schemas.Document)
+def get_document(document_id: str, db: Session = Depends(deps.get_db),
+):
+    """
+    Retrieve document by id.
+    """
+    doc_obj = dao.dao_document.get(db, id=document_id)
+    return doc_obj
+
+@router.get("/{document_id}/file", response_class=FileResponse)
 def get_document_file(document_id: str, db: Session = Depends(deps.get_db),
 ):
     """
