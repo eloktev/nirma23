@@ -28,7 +28,7 @@ class RecognitionLocationCreate(RecognitionLocationBase):
 
 
 class RecognitionLocation(RecognitionLocationBase):
-    geometry: Geometry
+    geometry: dict
     street_name: Optional[str]
 
     class Config:
