@@ -5,8 +5,8 @@ from schemas.theme import RecognitionThemeCreate
 from schemas.location import RecognitionLocationCreate
 from dao import dao_block, dao_theme, dao_message,  dao_location, dao_document
 from time import sleep
-
-import string, secrets, random
+import pandas as pd
+import string, secrets, random, io
 
 def random_string(type):        
         letters = string.ascii_lowercase+string.ascii_uppercase+string.digits            
@@ -82,7 +82,15 @@ def parse_document(db, document: Document):
     Mock parser
     """
     dao_document.set_marking_up(db, uuid=document.id)
-    for i in range(0, 3):
+    df = pd.read_excel(io.BytesIO(document.file))
+    for index, row in df.iterrows():
+        msg = MessageCreate(
+            text= row['Текст'],
+            document = document
+        )
+        msg_obj = dao_message.create(db, obj_in=msg)
+        markup_message(db, msg_obj)
+    # for i in range(0, 3):
         msg = MessageCreate(
             text= str(i) + '_text_from_' + document.name,
             document = document
