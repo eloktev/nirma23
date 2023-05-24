@@ -82,10 +82,11 @@ def parse_document(db, document: Document):
         markup = json.loads(f.read())
 
     for item in markup:
-        msg = MessageCreate(
+        msg_obj = MessageCreate(
             text= item['text'],
             document = document
         )
+        msg = dao_message.create(db, obj_in=msg_obj)
         for b in item['recognition_blocks']:
             block_schematized = RecognitionBlockCreate(
                 name=b["name"],
