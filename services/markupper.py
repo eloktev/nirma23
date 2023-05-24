@@ -87,24 +87,24 @@ def parse_document(db, document: Document):
             document = document
         )
         msg = dao_message.create(db, obj_in=msg_obj)
-        for b in item['recognition_blocks']:
+        for b in item.get('recognition_blocks', []):
             block_schematized = RecognitionBlockCreate(
                 name=b["name"],
                 probability=b["probability"],
                 message_id=msg.id
             )
             dao_block.create(db,obj_in=block_schematized)
-        for t in item['recognition_themes']:
+        for t in item.get('recognition_themes', []):
             block_schematized = RecognitionThemeCreate(
                 name=t["name"],
                 probability=t["probability"],
                 message_id=msg.id
             )
             dao_theme.create(db,obj_in=block_schematized)
-        for l in item['recognition_locations']:
+        for l in item.get('recognition_locations', []):
             location_schematized = RecognitionLocationCreate(
-                name=l["street_name"],
-                geometry=l["location"],
+                name=l.get("street_name", None),
+                geometry=l.get("geometry", None),
                 probability=l["probability"],
                 message_id=msg.id
             )
