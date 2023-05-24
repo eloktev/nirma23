@@ -7,6 +7,8 @@ from dao import dao_block, dao_theme, dao_message,  dao_location, dao_document
 from time import sleep
 import pandas as pd
 import string, secrets, random, io, json
+import geojson
+from shapely.geometry import shape
 
 def random_string(type):        
         letters = string.ascii_lowercase+string.ascii_uppercase+string.digits            
@@ -102,9 +104,14 @@ def parse_document(db, document: Document):
             )
             dao_theme.create(db,obj_in=block_schematized)
         for l in item.get('recognition_locations', []):
+            geometry = l.get("geometry", None)
+            if geometry:
+                g1 = geojson.loads(geometry)
+                g2 = shape(g1)
+                geometry = g2.wkt
             location_schematized = RecognitionLocationCreate(
                 name=l.get("street_name", None),
-                geometry=l.get("geometry", None),
+                geometry=geometry,
                 probability=l["probability"],
                 message_id=msg.id
             )
