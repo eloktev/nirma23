@@ -6,7 +6,7 @@ from schemas.location import RecognitionLocationCreate
 from dao import dao_block, dao_theme, dao_message,  dao_location, dao_document
 from time import sleep
 import pandas as pd
-import string, secrets, random, io
+import string, secrets, random, io, json
 
 def random_string(type):        
         letters = string.ascii_lowercase+string.ascii_uppercase+string.digits            
@@ -19,13 +19,6 @@ def get_random(type):
             if not i == random.randrange(3):
                 features.append({"name": random_string("streetname"), 
                                  "location": f"POINT (3{random.randrange(2)}.3117 59.{random.randrange(9999)})",
-                                #  "location": {
-                                #     "type": "Point",
-                                #     "coordinates": [
-                                #         float(f"3{random.randrange(2)}.3117"),
-                                #         float(f"59.{random.randrange(9999)}")
-                                #     ]
-                                #  },
                                  "probability": random.uniform(0, 1)
                                  })
 
@@ -47,6 +40,7 @@ def markup_message(db, message: MessageSchema):
                             "locations": get_random("location")
                         }
     markup = markup("_")
+
     for block in markup["blocks"]:
         block_schematized = RecognitionBlockCreate(
             name=block["name"],
@@ -83,20 +77,52 @@ def parse_document(db, document: Document):
     """
     dao_document.set_marking_up(db, uuid=document.id)
     df = pd.read_excel(io.BytesIO(document.file))
-    for index, row in df.iterrows():
+
+    with open('recognition_example.json', 'r') as f:
+        markup = json.loads(f.read())
+
+    for item in markup:
         msg = MessageCreate(
-            text= row['Текст'],
+            text= item['text'],
             document = document
         )
-        msg_obj = dao_message.create(db, obj_in=msg)
-        markup_message(db, msg_obj)
+        for b in item['recognition_blocks']:
+            block_schematized = RecognitionBlockCreate(
+                name=b["name"],
+                probability=b["probability"],
+                message_id=msg.id
+            )
+            dao_block.create(db,obj_in=block_schematized)
+        for t in item['recognition_themes']:
+            block_schematized = RecognitionThemeCreate(
+                name=t["name"],
+                probability=t["probability"],
+                message_id=msg.id
+            )
+            dao_theme.create(db,obj_in=block_schematized)
+        for l in item['recognition_locations']:
+            location_schematized = RecognitionLocationCreate(
+                name=l["street_name"],
+                geometry=l["location"],
+                probability=l["probability"],
+                message_id=msg.id
+            )
+            dao_location.create(db,obj_in=location_schematized)
+
+    # for index, row in df.iterrows():
+    #     msg = MessageCreate(
+    #         text= row['Текст'],
+    #         document = document
+    #     )
+    #     msg_obj = dao_message.create(db, obj_in=msg)
+    #     markup_message(db, msg_obj)
     # for i in range(0, 3):
-        msg = MessageCreate(
-            text= str(i) + '_text_from_' + document.name,
-            document = document
-        )
-        msg_obj = dao_message.create(db, obj_in=msg)
-        markup_message(db, msg_obj)
+        # msg = MessageCreate(
+        #     text= str(i) + '_text_from_' + document.name,
+        #     document = document
+        # )
+        # msg_obj = dao_message.create(db, obj_in=msg)
+        # markup_message(db, msg_obj)
 
     sleep(10)
     dao_document.set_marked_up(db, uuid=document.id)
