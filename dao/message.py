@@ -41,9 +41,9 @@ class MessageDAO(BaseDAO[Message, MessageCreate, MessageCreate]):
     
     def get_by_file_id(self,  db: Session, *, document_id: str, block: Optional[str]) -> List[Optional[Message]]:
         if block:
-            from dao.block import BlockDAO
+            from dao.block import _dao_block
 
-            block = BlockDAO.get_by_name(name=block).all()
+            block = _dao_block.get_by_name(name=block).all()
             if not block:
                 return []
             from models.block import RecognitionBlock
