@@ -85,12 +85,17 @@ def export_document_messages(document_id: UUID,
 
     df = pandas.DataFrame.from_dict(data)
     stream = io.StringIO()
-    df.to_excel(stream, index = False, engine='xlsxwriter')
+
+    writer = pandas.ExcelWriter('temp.xlsx', engine='xlsxwriter')
+    writer.book.filename = stream
+
+    df.to_excel(writer, index = False)
+    writer.save()
     # response = StreamingResponse(iter([stream.getvalue()]),
                                 #  media_type="text/csv"
                                 # )
     # response.headers["Content-Disposition"] = f"attachment; filename={document_id}.csv"
-    return Response(stream.read(),  headers={'Content-Disposition': 'attachment; filename="%s.xlsx"' %(document_id)})
+    return Response(stream.getvalue(),  headers={'Content-Disposition': 'attachment; filename="%s.xlsx"' %(document_id)})
 
 @router.patch("/{message_id}/approve/block", response_model=schemas.message.MessageSchema)
 def approve_block(message_id: UUID,
