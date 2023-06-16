@@ -84,7 +84,7 @@ def export_document_messages(document_id: UUID,
         data["Локация"].append(location_str)
 
     df = pandas.DataFrame.from_dict(data)
-    stream = io.StringIO()
+    stream = io.BytesIO()
 
     writer = pandas.ExcelWriter('temp.xlsx', engine='xlsxwriter')
     writer.book.filename = stream
