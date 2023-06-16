@@ -5,7 +5,7 @@ from uuid import UUID
 from dao.base import BaseDAO
 from models.message import Message
 from schemas.message import MessageCreate
-
+from sqlalchemy import and_, or_, not_
 from datetime import datetime
 
 class MessageDAO(BaseDAO[Message, MessageCreate, MessageCreate]):
@@ -39,8 +39,25 @@ class MessageDAO(BaseDAO[Message, MessageCreate, MessageCreate]):
             db.refresh(msg)
         return msg
     
-    def get_by_file_id(self,  db: Session, *, document_id: str) -> List[Optional[Message]]:
-        return db.query(self.model).filter(self.model.document_id == document_id).all()
+    def get_by_file_id(self,  db: Session, *, document_id: str, block: Optional[str]) -> List[Optional[Message]]:
+        if block:
+            from models.block import RecognitionBlock
+            return db.query(self.model).query.join(RecognitionBlock.message, aliased=True).filter_by(
+                and_(
+                    document_id == document_id,
+                    RecognitionBlock.name.like(block)
+                    # self.model.recognition_blocks == document_id
+                )
+                ).all()
+
+            return db.query(self.model).filter(
+                and_(
+                    self.model.document_id == document_id,
+                    self.model.recognition_blocks == document_id
+                )
+                ).all()
+        else:
+            return db.query(self.model).filter(self.model.document_id == document_id).all()
 
     def create(self, db: Session, *, obj_in: MessageCreate) -> Message:
         message = Message(

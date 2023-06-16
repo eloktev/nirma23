@@ -30,7 +30,7 @@ def get_document_messages(document_id: UUID,
 @router.get("/{document_id}/file", 
             response_class=FileResponse
             )
-def get_document_messages(document_id: UUID,
+def export_document_messages(document_id: UUID,
                           db: Session = Depends(deps.get_db)):
     """
     Retrieve a file with messages of a document with fileId
