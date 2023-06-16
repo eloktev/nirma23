@@ -39,13 +39,16 @@ class MessageDAO(BaseDAO[Message, MessageCreate, MessageCreate]):
             db.refresh(msg)
         return msg
     
-    def get_by_file_id(self,  db: Session, *, document_id: str, block: Optional[str]) -> List[Optional[Message]]:
+    def get_by_file_id(self,  db: Session, *, document_id: str, block: Optional[str] = None) -> List[Optional[Message]]:
         if block:
             from dao.block import _dao_block
-            from models.block import RecognitionBlock
+
             block = _dao_block.get_by_name(db, name=block)
             if not block:
                 return []
+            from models.block import RecognitionBlock
+
+
             return db.query(self.model).join(RecognitionBlock, aliased=True).filter(
                 and_(
                     document_id == document_id,
@@ -53,6 +56,8 @@ class MessageDAO(BaseDAO[Message, MessageCreate, MessageCreate]):
                     # self.model.recognition_blocks == document_id
                 )
                 ).all()
+
+
         else:
             return db.query(self.model).filter(self.model.document_id == document_id).all()
 
