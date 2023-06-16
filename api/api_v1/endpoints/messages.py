@@ -85,7 +85,7 @@ def export_document_messages(document_id: UUID,
 
     df = pandas.DataFrame.from_dict(data)
     stream = io.StringIO()
-    df.to_csv(stream, index = False)
+    df.to_excel(stream, index = False)
     # response = StreamingResponse(iter([stream.getvalue()]),
                                 #  media_type="text/csv"
                                 # )
