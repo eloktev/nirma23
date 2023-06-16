@@ -91,6 +91,7 @@ def export_document_messages(document_id: UUID,
 
     df.to_excel(writer, index = False)
     writer.close()
+    stream.seek(0)
     # response = StreamingResponse(iter([stream.getvalue()]),
                                 #  media_type="text/csv"
                                 # )
