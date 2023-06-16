@@ -16,6 +16,7 @@ router = APIRouter()
 
 @router.get("/{document_id}", response_model=List[Optional[schemas.message.MessageSchema]])
 def get_document_messages(document_id: UUID,
+                          block: Optional[str],
                           db: Session = Depends(deps.get_db)):
     """
     Retrieve messages of a document with fileId
@@ -25,7 +26,9 @@ def get_document_messages(document_id: UUID,
         raise HTTPException(status_code=404, detail="Document not found")
     elif document.status == DocumentStatus.loaded:
         raise HTTPException(status_code=425, detail="Markup in progress for this document")
-    return dao.dao_message.get_by_file_id(db, document_id=document_id)
+    
+
+    return dao.dao_message.get_by_file_id(db, document_id=document_id, block=block)
 
 @router.get("/{document_id}/file", 
             response_class=FileResponse
