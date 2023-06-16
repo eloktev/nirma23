@@ -43,7 +43,7 @@ class MessageDAO(BaseDAO[Message, MessageCreate, MessageCreate]):
         if block:
             from dao.block import _dao_block
 
-            block = _dao_block.get_by_name(name=block).all()
+            block = _dao_block.get_by_name(db, name=block).all()
             if not block:
                 return []
             from models.block import RecognitionBlock
