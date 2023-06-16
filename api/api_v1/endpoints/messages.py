@@ -90,7 +90,7 @@ def export_document_messages(document_id: UUID,
     writer.book.filename = stream
 
     df.to_excel(writer, index = False)
-    writer.save()
+    writer.close()
     # response = StreamingResponse(iter([stream.getvalue()]),
                                 #  media_type="text/csv"
                                 # )
