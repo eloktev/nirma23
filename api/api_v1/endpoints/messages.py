@@ -16,7 +16,7 @@ router = APIRouter()
 
 @router.get("/{document_id}", response_model=List[Optional[schemas.message.MessageSchema]])
 def get_document_messages(document_id: UUID,
-                          block: Optional[str],
+                          block: Optional[str] = None,
                           db: Session = Depends(deps.get_db)):
     """
     Retrieve messages of a document with fileId
