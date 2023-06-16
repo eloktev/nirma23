@@ -86,7 +86,7 @@ def get_document_messages(document_id: UUID,
     # response = StreamingResponse(iter([stream.getvalue()]),
                                 #  media_type="text/csv"
                                 # )
-    response.headers["Content-Disposition"] = f"attachment; filename={document_id}.csv"
+    # response.headers["Content-Disposition"] = f"attachment; filename={document_id}.csv"
     return Response(stream.getvalue(),  headers={'Content-Disposition': 'attachment; filename="%s.csv"' %(document_id)})
 
 @router.patch("/{message_id}/approve/block", response_model=schemas.message.MessageSchema)
