@@ -64,19 +64,19 @@ def get_document_messages(document_id: UUID,
         block_str = ""
         for block in blocks:
             block_probabilty = "%.2f" % round(block.probability, 2)
-            block_str += f"{block.name} ({block_probabilty})%) "
+            block_str += f"{block.name} ({block_probabilty} %) "
         data["Блок"].append(block_str)
         themes = msg.recognition_themes
         theme_str = ""
         for theme in themes:
             theme_probabilty = "%.2f" % round(theme.probability, 2)
-            theme_str += f"{theme.name} ({theme_probabilty})%) "
+            theme_str += f"{theme.name} ({theme_probabilty} %) "
         data["Тема"].append(theme_str)
         locations = msg.recognition_locations
         location_str = ""
         for location in locations:
             location_probabilty = "%.2f" % round(location.probability, 2)
-            location_str += f"{location.street_name} ({location_probabilty})%) "
+            location_str += f"{location.street_name} ({location_probabilty} %) "
 
         data["Локация"].append(location_str)
 
