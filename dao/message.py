@@ -42,7 +42,7 @@ class MessageDAO(BaseDAO[Message, MessageCreate, MessageCreate]):
     def get_by_file_id(self,  db: Session, *, document_id: str, block: Optional[str]) -> List[Optional[Message]]:
         if block:
             from models.block import RecognitionBlock
-            return db.query(self.model).query.join(RecognitionBlock.message, aliased=True).filter_by(
+            return db.query(self.model).join(RecognitionBlock.message, aliased=True).filter_by(
                 and_(
                     document_id == document_id,
                     RecognitionBlock.name.like(block)
