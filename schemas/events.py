@@ -4,15 +4,19 @@ from uuid import UUID
 from pydantic import BaseModel
 from schemas.document import Document
 
-
-
-class EventsCreate(BaseModel):
-    document: Document
+class EventsBase(BaseModel):
     file_events: bytes
     file_messages: bytes
 
 
-class Events(EventsCreate):
+class EventsCreate(EventsBase):
+    document: Document
+   
+
+
+
+
+class Events(EventsBase):
     id: Union[str, UUID]
 
     class Config:
