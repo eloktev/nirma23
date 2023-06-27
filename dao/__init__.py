@@ -3,6 +3,7 @@ from .message import dao_message
 from .block import dao_block, dao_approvedblock
 from .theme import dao_theme, dao_approvedtheme
 from .location import dao_location, dao_approvedlocation
+from .events import dao_events
 
 # For a new basic set of CRUD operations you could just do
 
