@@ -1,12 +1,12 @@
-from typing import Optional, Union
+from typing import Optional, Union, Any
 from datetime import datetime
 from uuid import UUID
 from pydantic import BaseModel
 from schemas.document import Document
 
 class EventsBase(BaseModel):
-    file_events: bytes
-    file_messages: bytes
+    file_events: Any
+    file_messages: Any
 
 
 class EventsCreate(EventsBase):
