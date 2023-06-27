@@ -14,7 +14,7 @@ from datetime import datetime
 class EventsDAO(BaseDAO[Events, EventsCreate, EventsCreate]):
     
     def get_by_file_id(self,  db: Session, *, document_id: str) -> Optional[Events]:
-        return db.query(self.model).filter(self.model.document_id == document_id).all()
+        return db.query(self.model).filter(self.model.document_id == document_id).first()
 
     def create(self, db: Session, *, obj_in: EventsCreate) -> Events:
         events = Events(

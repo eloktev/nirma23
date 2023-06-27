@@ -24,7 +24,7 @@ class RecognitionLocationBase(BaseModel):
 class RecognitionLocationCreate(RecognitionLocationBase):
     message_id: UUID
     name: Optional[str]
-    geometry: str
+    geometry: Optional[str]
 
 
 class RecognitionLocation(RecognitionLocationBase):
