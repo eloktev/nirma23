@@ -30,7 +30,7 @@ def parse_document(db, document: Document):
 
     with open('recognition_example.json', 'r') as f:
         markup = json.loads(f.read())
-    for item in markup[0:10]:
+    for item in markup:
         msg_obj = MessageCreate(
             text= item['text'],
             document = document
