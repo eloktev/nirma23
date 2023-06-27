@@ -4,12 +4,9 @@ from uuid import UUID
 from pydantic import BaseModel
 from schemas.document import Document
 
-# Shared properties
-class EventsBase(BaseModel):
-    name: str
 
 
-class EventsCreate(EventsBase):
+class EventsCreate(BaseModel):
     document: Document
     file_events: bytes
     file_messages: bytes
