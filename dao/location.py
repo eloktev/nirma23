@@ -33,8 +33,12 @@ class RecognitionLocationDAO(BaseDAO[RecognitionLocation, RecognitionLocationCre
     def create(self, db: Session, *, obj_in: RecognitionLocationCreate) -> RecognitionLocation:
         # print(type(loads(obj_in.geometry))
         from geoalchemy2.shape import from_shape
-        shape = loads(obj_in.geometry)
-        location_schematized = LocationSchema(name = obj_in.name, geometry=from_shape(shape))
+        if obj_in.geometry:
+            shape = loads(obj_in.geometry)
+            geometry = from_shape(shape)
+        else:
+            geometry=None
+        location_schematized = LocationSchema(name = obj_in.name, geometry=geometry)
         location = _dao_location.create(db, obj_in = location_schematized)
         
         location = RecognitionLocation(
