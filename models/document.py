@@ -26,6 +26,7 @@ class Document(Base):
     file = Column(LargeBinary)
     status = Column(Enum(DocumentStatus))
     messages = relationship('Message', back_populates='document', cascade="all, delete")
+    events = relationship('Events', back_populates='document', cascade="all, delete")
 
     # email = Column(String, unique=True, index=True, nullable=False)
     # hashed_password = Column(String, nullable=False)
