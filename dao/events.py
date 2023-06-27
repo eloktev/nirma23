@@ -18,10 +18,10 @@ class EventsDAO(BaseDAO[Events, EventsCreate, EventsCreate]):
 
     def create(self, db: Session, *, obj_in: EventsCreate) -> Events:
         events = Events(
-            document=obj_in.document,
+            document_id = obj_in.document.id,
             file_events=obj_in.file_events,
             file_messages=obj_in.file_messages,
-            created_at=datetime.now(),
+            # created_at=datetime.now(),
         )
         db.add(events)
         db.commit()
