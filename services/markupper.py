@@ -23,8 +23,8 @@ def parse_document(db, document: Document):
         with open('test_messages.geojson', 'rb') as m:
             events_schematized = EventsCreate(
                 document=document,
-                file_events= geojson.loads(e.read()),
-                file_messages= geojson.loads(m.read())
+                file_events= geojson.dumps(geojson.loads(e.read())).encode() ,
+                file_messages= geojson.dumps(geojson.loads(m.read())).encode()
                 )
             dao_events.create(db,obj_in=events_schematized)
 
