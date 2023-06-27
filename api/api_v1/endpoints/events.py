@@ -7,7 +7,7 @@ from fastapi.exceptions import HTTPException
 from schemas.location import Location
 import dao, models, schemas
 from api import deps
-from fastapi.responses import Response, FileResponse, StreamingResponse
+from fastapi.responses import ORJSONResponse
 from models.document import DocumentStatus
 import pandas, io
 
@@ -29,5 +29,6 @@ def get_document_events(document_id: UUID,
     events = dao.dao_events.get_by_file_id(db, document_id=document_id)
     if not events:
         raise HTTPException(status_code=404, detail="Events for document not found")
-
-    return events
+    
+    import geojson
+    return ORJSONResponse({"events": geojson.loads(events.file_events), "messages":geojson.loads(events.file_messages) })
