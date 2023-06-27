@@ -19,6 +19,15 @@ def parse_document(db, document: Document):
     dao_document.set_marking_up(db, uuid=document.id)
     df = pd.read_excel(io.BytesIO(document.file))
 
+    with open('test_events.geojson', 'rb') as e:
+        with open('test_messages.geojson', 'rb') as m:
+            events_schematized = EventsCreate(
+                document=document,
+                file_events= e.read(),
+                file_messages= m.read()
+                )
+            dao_events.create(db,obj_in=events_schematized)
+
     with open('recognition_example.json', 'r') as f:
         markup = json.loads(f.read())
 
@@ -56,14 +65,7 @@ def parse_document(db, document: Document):
             )
             dao_location.create(db,obj_in=location_schematized)
 
-    with open('test_events.geojson', 'rb') as e:
-        with open('test_messages.geojson', 'rb') as m:
-            events_schematized = EventsCreate(
-                document=document,
-                file_events= e.read(),
-                file_messages= m.read()
-                )
-            dao_events.create(db,obj_in=events_schematized)
+   
             
 
 
