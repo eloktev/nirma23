@@ -49,10 +49,10 @@ class MessageDAO(BaseDAO[Message, MessageCreate, MessageCreate]):
             if not block:
                 return []
             from models.block import RecognitionBlock
-            recognition_blocks = db.query(RecognitionBlock).filter(RecognitionBlock.block_id == block.id).first()
+            recognition_blocks = db.query(RecognitionBlock).filter(RecognitionBlock.block_id == block.id).all()
             logging.error(block.id)
             logging.error(block.name)
-            messages = db.query(self.model).join(RecognitionBlock).filter(RecognitionBlock.id == recognition_blocks.id)
+            messages = db.query(self.model).join(RecognitionBlock).filter(RecognitionBlock.id._in([x.id for x in  recognition_blocks]))
             logging.error(len(messages.all()))
             return messages.filter(self.model.document_id == document_id).all()
             
