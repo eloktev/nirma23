@@ -14,7 +14,7 @@ import pandas, io
 
 router = APIRouter()
 
-@router.get("/{document_id}", response_model=List[Optional[schemas.message.MessageSchema]])
+@router.get("/{document_id}", response_model=Optional[List[Optional[schemas.message.MessageSchema]]])
 def get_document_messages(document_id: UUID,
                           block: Optional[str] = None,
                           db: Session = Depends(deps.get_db)):
