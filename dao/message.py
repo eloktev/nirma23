@@ -45,13 +45,14 @@ class MessageDAO(BaseDAO[Message, MessageCreate, MessageCreate]):
             from dao.block import _dao_block
             logging.error(block)
             block = _dao_block.get_by_name(db, name=block)
+            recognition_blocks = db.query(RecognitionBlock).filter(block_id = block.id)
             if not block:
                 return []
             from models.block import RecognitionBlock
 
             logging.error(block.id)
             logging.error(block.name)
-            messages = db.query(self.model).join(RecognitionBlock).filter(RecognitionBlock.id == block.id)
+            messages = db.query(self.model).join(RecognitionBlock).filter(RecognitionBlock.id == recognition_blocks.id)
             logging.error(len(messages.all()))
             return messages.filter(self.model.document_id == document_id).all()
             
