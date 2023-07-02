@@ -52,7 +52,7 @@ class MessageDAO(BaseDAO[Message, MessageCreate, MessageCreate]):
             logging.error(block.id)
             logging.error(block.name)
             messages = db.query(self.model).join(RecognitionBlock).filter(RecognitionBlock.id == block.id)
-            logging.error(len(messages))
+            logging.error(len(messages.all()))
             return messages.filter(self.model.document_id == document_id).all()
             
         else:
