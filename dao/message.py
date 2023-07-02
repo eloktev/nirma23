@@ -49,10 +49,10 @@ class MessageDAO(BaseDAO[Message, MessageCreate, MessageCreate]):
             from models.block import RecognitionBlock
 
 
-            return db.query(self.model).join(RecognitionBlock, aliased=True).filter(
+            return db.query(self.model).filter(
                 and_(
                     self.model.document_id == document_id,
-                    self.model.RecognitionBlock.block == block
+                    self.model.recognition_blocks.any(RecognitionBlock.id.in_([block.id]))
                     # self.model.recognition_blocks == document_id
                 )
                 ).all()
