@@ -7,6 +7,7 @@ from models.message import Message
 from schemas.message import MessageCreate
 from sqlalchemy import and_, or_, not_
 from datetime import datetime
+import logging
 
 class MessageDAO(BaseDAO[Message, MessageCreate, MessageCreate]):
     
@@ -42,14 +43,14 @@ class MessageDAO(BaseDAO[Message, MessageCreate, MessageCreate]):
     def get_by_file_id(self,  db: Session, *, document_id: str, block: Optional[str] = None) -> List[Optional[Message]]:
         if block:
             from dao.block import _dao_block
-            print(block)
+            logging.error(block)
             block = _dao_block.get_by_name(db, name=block)
             if not block:
                 return []
             from models.block import RecognitionBlock
 
-            print(block.id)
-            print(block.name)
+            logging.error(block.id)
+            logging.error(block.name)
             return db.query(self.model).filter(
                 and_(
                     self.model.document_id == document_id,
