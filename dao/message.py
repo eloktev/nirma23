@@ -54,7 +54,7 @@ class MessageDAO(BaseDAO[Message, MessageCreate, MessageCreate]):
             return db.query(self.model).join(RecognitionBlock).filter(
                 and_(
                     self.model.document_id == document_id,
-                    RecognitionBlock.column.id.in_([block.id])
+                    RecognitionBlock.id.in_([block.id])
                     # self.model.recognition_blocks == document_id
                 )
                 ).all()
