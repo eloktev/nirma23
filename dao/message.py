@@ -51,11 +51,9 @@ class MessageDAO(BaseDAO[Message, MessageCreate, MessageCreate]):
 
             logging.error(block.id)
             logging.error(block.name)
-            messages = db.query(self.model).filter(self.model.document_id == document_id).all()
-            return \
-            db.query(self.model).filter(self.model.document_id == document_id).\
-                join(RecognitionBlock).\
-                filter(RecognitionBlock.id.in_([block.id])).all()
+            messages = db.query(self.model).join(RecognitionBlock).filter(RecognitionBlock.id == block.id).all()
+            return messages.filter(self.model.document_id == document_id).all()
+            
         else:
             return db.query(self.model).filter(self.model.document_id == document_id).all()
 
