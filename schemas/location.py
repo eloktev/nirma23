@@ -11,7 +11,7 @@ from models.document import DocumentStatus
 
 class Location(BaseModel):
     name: Optional[str]
-    geometry: Any
+    geometry: Optional[Any]
 
     class Config:
         orm_mode = True
@@ -38,7 +38,7 @@ class RecognitionLocation(RecognitionLocationBase):
 class ApprovedLocationCreate(BaseModel):
     message_id: UUID
     name: Optional[str] #Location.name
-    geometry: str #Location.geometry
+    geometry: Optional[str] #Location.geometry
 
 
 class ApprovedLocation(BaseModel):
