@@ -29,7 +29,7 @@ class RecognitionLocationCreate(RecognitionLocationBase):
 
 class RecognitionLocation(RecognitionLocationBase):
     geometry: Optional[dict] #Location.geometry
-    street_name: Optional[str] #Location.street_name
+    street_name: Optional[str] #Location.name
 
     class Config:
         orm_mode = True
