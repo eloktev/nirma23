@@ -11,9 +11,10 @@ import geojson
 from shapely.geometry import shape
 import pandas as pd
 import torch
-from SOIKA.factfinder import TextClassifier, AddressExtractor
+from .SOIKA.factfinder import TextClassifier, AddressExtractor
 import warnings
 warnings.simplefilter('ignore')
+import logging
           
 def parse_document(db, document: Document):
     """
@@ -21,26 +22,18 @@ def parse_document(db, document: Document):
     """
     dao_document.set_marking_up(db, uuid=document.id)
     df = pd.read_excel(io.BytesIO(document.file))
-    device_type = torch.device('cpu')
+
     # df = pd.read_excel('test.xlsx')
     df = df.head(100)
     df = df.dropna(subset=['Текст'])
-    model = TextClassifier(
-        repository_id="Sandrro/text_to_function_v2",
-        number_of_categories=3,
-        device_type=device_type,
-    )
-    df[['blocks','block_probs']] = pd.DataFrame(df['Текст'].progress_map(lambda x: model.run(x)).to_list())
 
-    model = TextClassifier(
-        repository_id="Sandrro/text_to_subfunction_v10",
-        number_of_categories=3,
-        device_type=device_type,
-    )
-    df[['themes','theme_probs']] = pd.DataFrame(df['Текст'].progress_map(lambda x: model.run(x)).to_list())
+    df[['blocks','block_probs']] = pd.DataFrame(df['Текст'].progress_map(lambda x: blocks_model.run(x)).to_list())
 
-    model = AddressExtractor()
-    df[['street', 'street_prob', 'Текст комментария_normalized']] = df['Текст'].progress_apply(lambda t: model.run(t))
+    
+    df[['themes','theme_probs']] = pd.DataFrame(df['Текст'].progress_map(lambda x: themes_model.run(x)).to_list())
+
+    
+    df[['street', 'street_prob', 'Текст комментария_normalized']] = df['Текст'].progress_apply(lambda t: address_model.run(t))
 
     for index, row in df.iterrows():
         msg_obj = MessageCreate(

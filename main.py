@@ -11,16 +11,40 @@ from db.database import SessionLocal, engine
 from db.base_class import Base
 from typing import Annotated
 from api.api_v1.api import api_router
-
+from contextlib import asynccontextmanager
 # Base.metadata.create_all(bind=engine)
+
+import torch
+from services.SOIKA.factfinder import TextClassifier, AddressExtractor
 
 origins = [
     "http://localhost:3000",
     "https://nirma.lok-labs.com",
 ]
 
+ml_models = {}
 
-app = FastAPI(title=settings.PROJECT_NAME)
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Load the ML model
+    device_type = torch.device('cpu')
+    ml_models["blocks_model"] = TextClassifier(
+        repository_id="Sandrro/text_to_function_v2",
+        number_of_categories=3,
+        device_type=device_type,
+    )
+    ml_models["themes_model"] =  TextClassifier(
+        repository_id="Sandrro/text_to_subfunction_v10",
+        number_of_categories=3,
+        device_type=device_type,
+    )
+    ml_models["address_model"] = AddressExtractor()
+
+    yield
+    # Clean up the ML models and release the resources
+    ml_models.clear()
+
+app = FastAPI(title=settings.PROJECT_NAME, lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
