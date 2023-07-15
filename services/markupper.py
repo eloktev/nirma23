@@ -41,7 +41,7 @@ def parse_document(db, document: Document):
             document = document
         )
         msg = dao_message.create(db, obj_in=msg_obj)
-        blocks = row['blocks'].to_list()
+        blocks = row['blocks']
         blocks = blocks.split(',')
         blocks = [block.strip() for block in blocks]
 
@@ -56,7 +56,7 @@ def parse_document(db, document: Document):
             )
             dao_block.create(db,obj_in=block_schematized)
 
-        themes = row['themes'].to_list()
+        themes = row['themes']
         themes = themes.split(',')
         themes = [theme.strip() for theme in themes]
 
