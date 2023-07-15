@@ -14,6 +14,7 @@ from api.api_v1.api import api_router
 from contextlib import asynccontextmanager
 # Base.metadata.create_all(bind=engine)
 
+import logging 
 import torch
 from services.SOIKA.factfinder import TextClassifier, AddressExtractor
 
@@ -27,17 +28,20 @@ ml_models = {}
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Load the ML model
+    logging.info("Start blocks model load")
     device_type = torch.device('cpu')
     ml_models["blocks_model"] = TextClassifier(
         repository_id="Sandrro/text_to_function_v2",
         number_of_categories=3,
         device_type=device_type,
     )
+    logging.info("Start themes model load")
     ml_models["themes_model"] =  TextClassifier(
         repository_id="Sandrro/text_to_subfunction_v10",
         number_of_categories=3,
         device_type=device_type,
     )
+    logging.info("Start address model load")
     ml_models["address_model"] = AddressExtractor()
 
     yield
