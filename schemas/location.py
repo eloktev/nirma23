@@ -43,6 +43,6 @@ class ApprovedLocationCreate(BaseModel):
 
 class ApprovedLocation(BaseModel):
     name: str #Location.name
-    geometry: str #Location.geometry
+    geometry: Optional[str] #Location.geometry
 
 
