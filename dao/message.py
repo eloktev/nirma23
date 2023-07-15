@@ -28,8 +28,8 @@ class MessageDAO(BaseDAO[Message, MessageCreate, MessageCreate]):
             db.add(msg)
             db.commit()
             db.refresh(msg)
-            return msg
-        return None
+        return msg
+
 
     def set_approved_theme(self,  db: Session, *, message_id: UUID, approved_theme_id: UUID) -> Optional[Message]:
         msg = db.query(self.model).filter(self.model.id == message_id).first()
