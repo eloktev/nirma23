@@ -143,6 +143,7 @@ def approve_location(message_id: UUID,
     if not dao.dao_document.has_approved_messages(db, id=doc.id):
         dao.dao_document.set_approve_start(db, uuid=doc.id)
     a_location = dao.dao_approvedlocation.create(db, obj_in=a_location_obj)
+    db.refresh(message)
     if dao.dao_document.is_every_approved_messages(db, id=doc.id):
         dao.dao_document.set_marked_up(db, uuid=doc.id)
-    return a_location
+    return message
