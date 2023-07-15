@@ -131,7 +131,7 @@ def approve_theme(message_id: UUID,
     return a_theme
 
 
-@router.patch("/{message_id}/approve/location", response_model=schemas.message.MessageSchema)
+@router.patch("/{message_id}/approve/location")
 def approve_location(message_id: UUID,
                   location: Location,
                   db: Session = Depends(deps.get_db)):
