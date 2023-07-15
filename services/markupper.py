@@ -11,7 +11,7 @@ import geojson
 from shapely.geometry import shape
 import pandas as pd
 import torch
-from .SOIKA.factfinder import TextClassifier, AddressExtractor
+from ..main import ml_models
 import warnings
 warnings.simplefilter('ignore')
 import logging
@@ -27,13 +27,13 @@ def parse_document(db, document: Document):
     df = df.head(100)
     df = df.dropna(subset=['Текст'])
 
-    df[['blocks','block_probs']] = pd.DataFrame(df['Текст'].progress_map(lambda x: blocks_model.run(x)).to_list())
+    df[['blocks','block_probs']] = pd.DataFrame(df['Текст'].progress_map(lambda x: ml_models['blocks_model'].run(x)).to_list())
 
     
-    df[['themes','theme_probs']] = pd.DataFrame(df['Текст'].progress_map(lambda x: themes_model.run(x)).to_list())
+    df[['themes','theme_probs']] = pd.DataFrame(df['Текст'].progress_map(lambda x: ml_models['themes_model'].run(x)).to_list())
 
     
-    df[['street', 'street_prob', 'Текст комментария_normalized']] = df['Текст'].progress_apply(lambda t: address_model.run(t))
+    df[['street', 'street_prob', 'Текст комментария_normalized']] = df['Текст'].progress_apply(lambda t: ml_models['address_model'].run(t))
 
     for index, row in df.iterrows():
         msg_obj = MessageCreate(
