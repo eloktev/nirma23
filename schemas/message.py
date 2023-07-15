@@ -27,7 +27,7 @@ class MessageSchema(MessageBase):
     recognition_locations: List[Optional[RecognitionLocation]]
     approved_block: Optional[str]
     approved_theme: Optional[str]
-    approved_location: Optional[Any]
+    approved_location: Optional[dict]
 
 
     class Config:
