@@ -61,10 +61,10 @@ class ApprovedLocationDAO(BaseDAO[ApprovedLocation, ApprovedLocationCreate, Appr
 
     def create(self, db: Session, *, obj_in: ApprovedLocationCreate):
         from geoalchemy2.shape import from_shape
-        if obj_in.geometry is not None or obj_in.geometry != '':
+        try:
             shape = loads(obj_in.geometry)
             geometry = from_shape(shape)
-        else:
+        except:
             geometry = None
         location_schematized = LocationSchema(name = obj_in.name, geometry=geometry)
         location = _dao_location.create(db, obj_in = location_schematized)
