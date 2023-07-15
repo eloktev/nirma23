@@ -28,8 +28,8 @@ class RecognitionLocationCreate(RecognitionLocationBase):
 
 
 class RecognitionLocation(RecognitionLocationBase):
-    geometry: Optional[dict]
-    street_name: Optional[str]
+    geometry: Optional[dict] #Location.geometry
+    street_name: Optional[str] #Location.street_name
 
     class Config:
         orm_mode = True
@@ -42,7 +42,7 @@ class ApprovedLocationCreate(BaseModel):
 
 
 class ApprovedLocation(BaseModel):
-    name: str #Theme.name
+    name: str #Location.name
     geometry: str #Location.geometry
 
 
