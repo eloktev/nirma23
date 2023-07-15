@@ -42,7 +42,12 @@ def parse_document(db, document: Document):
         )
         msg = dao_message.create(db, obj_in=msg_obj)
         blocks = row['blocks'].to_list()
-        block_probs = row['block_probs'].to_list()
+        blocks = blocks.split(',')
+        blocks = [block.strip() for block in blocks]
+
+        block_probs = row['block_probs']
+        block_probs = block_probs.split(',')
+        block_probs = [float(block_prob.strip()) for block_prob in block_probs]
         for i in range(len(blocks)):
             block_schematized = RecognitionBlockCreate(
                 name=blocks[i],
@@ -52,7 +57,12 @@ def parse_document(db, document: Document):
             dao_block.create(db,obj_in=block_schematized)
 
         themes = row['themes'].to_list()
-        theme_probs = row['theme_probs'].to_list()
+        themes = themes.split(',')
+        themes = [theme.strip() for theme in themes]
+
+        theme_probs = row['theme_probs']
+        theme_probs = theme_probs.split(',')
+        theme_probs = [float(theme_prob.strip()) for theme_prob in theme_probs]
         for i in range(len(themes)):
             theme_schematized = RecognitionThemeCreate(
                 name=themes[i],
