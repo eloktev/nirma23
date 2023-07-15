@@ -11,7 +11,6 @@ import geojson
 from shapely.geometry import shape
 import pandas as pd
 import torch
-from ..main import ml_models
 import warnings
 warnings.simplefilter('ignore')
 import logging
@@ -20,6 +19,7 @@ def parse_document(db, document: Document):
     """
     Mock parser
     """
+    from main import ml_models
     dao_document.set_marking_up(db, uuid=document.id)
     df = pd.read_excel(io.BytesIO(document.file))
 
