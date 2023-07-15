@@ -24,7 +24,7 @@ class MessageSchema(MessageBase):
     created_at: datetime 
     recognition_blocks: List[Optional[RecognitionBlock]]
     recognition_themes: Optional[List[Optional[RecognitionTheme]]]
-    recognition_locations: Optional[List[Optional[RecognitionLocation]]]
+    recognition_locations: Optional[Any]
     approved_block: Optional[str]
     approved_theme: Optional[str]
     approved_location: Optional[Any]
