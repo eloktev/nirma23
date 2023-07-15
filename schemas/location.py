@@ -28,8 +28,8 @@ class RecognitionLocationCreate(RecognitionLocationBase):
 
 
 class RecognitionLocation(RecognitionLocationBase):
-    geometry: Optional[dict] #Location.geometry
-    street_name: Optional[str] #Location.name
+    geometry: Optional[Any]
+    street_name: Optional[str]
 
     class Config:
         orm_mode = True
