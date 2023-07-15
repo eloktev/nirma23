@@ -18,7 +18,7 @@ class Location(BaseModel):
 
 
 class RecognitionLocationBase(BaseModel):
-    probability: float
+    probability: Optional[float}
 
 
 class RecognitionLocationCreate(RecognitionLocationBase):
