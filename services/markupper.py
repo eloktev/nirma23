@@ -25,7 +25,6 @@ def parse_document(db, document: Document):
     df = pd.read_excel(io.BytesIO(document.file))
 
     # df = pd.read_excel('test.xlsx')
-    df = df.head(100)
     df = df.dropna(subset=['Текст'])
 
     df[['blocks','block_probs']] = pd.DataFrame(df['Текст'].progress_map(lambda x: ml_models['blocks_model'].run(x)).to_list())
