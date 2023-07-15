@@ -6,11 +6,14 @@ from schemas.location import RecognitionLocationCreate
 from schemas.events import EventsCreate
 from dao import dao_block, dao_theme, dao_message,  dao_location, dao_document, dao_events
 from time import sleep
-import pandas as pd
 import io, json
 import geojson
 from shapely.geometry import shape
-
+import pandas as pd
+import torch
+from SOIKA.factfinder import TextClassifier, AddressExtractor
+import warnings
+warnings.simplefilter('ignore')
           
 def parse_document(db, document: Document):
     """
@@ -18,6 +21,67 @@ def parse_document(db, document: Document):
     """
     dao_document.set_marking_up(db, uuid=document.id)
     df = pd.read_excel(io.BytesIO(document.file))
+    device_type = torch.device('cpu')
+    # df = pd.read_excel('test.xlsx')
+    df = df.head(100)
+    df = df.dropna(subset=['Текст'])
+    model = TextClassifier(
+        repository_id="Sandrro/text_to_function_v2",
+        number_of_categories=3,
+        device_type=device_type,
+    )
+    df[['blocks','block_probs']] = pd.DataFrame(df['Текст'].progress_map(lambda x: model.run(x)).to_list())
+
+    model = TextClassifier(
+        repository_id="Sandrro/text_to_subfunction_v10",
+        number_of_categories=3,
+        device_type=device_type,
+    )
+    df[['themes','theme_probs']] = pd.DataFrame(df['Текст'].progress_map(lambda x: model.run(x)).to_list())
+
+    model = AddressExtractor()
+    df[['street', 'street_prob', 'Текст комментария_normalized']] = df['Текст'].progress_apply(lambda t: model.run(t))
+
+    for index, row in df.iterrows():
+        msg_obj = MessageCreate(
+            text= row['Текст'],
+            document = document
+        )
+        msg = dao_message.create(db, obj_in=msg_obj)
+        blocks = row['blocks'].to_list()
+        block_probs = row['block_probs'].to_list()
+        for i in range(len(blocks)):
+            block_schematized = RecognitionBlockCreate(
+                name=blocks[i],
+                probability=block_probs[i],
+                message_id=msg.id
+            )
+            dao_block.create(db,obj_in=block_schematized)
+
+        themes = row['themes'].to_list()
+        theme_probs = row['theme_probs'].to_list()
+        for i in range(len(themes)):
+            theme_schematized = RecognitionThemeCreate(
+                name=themes[i],
+                probability=theme_probs[i],
+                message_id=msg.id
+            )
+            dao_theme.create(db,obj_in=theme_schematized)
+        
+        street = row['street']
+        street_prob = row['street_prob']
+        if type(street) is str and type(street_prob) in [int, float]:
+            # g1 = geojson.loads(geometry)
+            # g2 = shape(g1)
+            # geometry = g2.wkt
+            location_schematized = RecognitionLocationCreate(
+                name=street,
+                geometry=None,
+                probability=street_prob,
+                message_id=msg.id
+            )
+            dao_location.create(db,obj_in=location_schematized)
+
 
     with open('test_events.geojson', 'rb') as e:
         with open('test_messages.geojson', 'rb') as m:
@@ -28,42 +92,6 @@ def parse_document(db, document: Document):
                 )
             dao_events.create(db,obj_in=events_schematized)
 
-    with open('recognition_example.json', 'r') as f:
-        markup = json.loads(f.read())
-    for item in markup:
-        msg_obj = MessageCreate(
-            text= item['text'],
-            document = document
-        )
-        msg = dao_message.create(db, obj_in=msg_obj)
-        for b in item.get('recognition_blocks', []):
-            block_schematized = RecognitionBlockCreate(
-                name=b["name"],
-                probability=b["probability"],
-                message_id=msg.id
-            )
-            dao_block.create(db,obj_in=block_schematized)
-        for t in item.get('recognition_themes', []):
-            block_schematized = RecognitionThemeCreate(
-                name=t["name"],
-                probability=t["probability"],
-                message_id=msg.id
-            )
-            dao_theme.create(db,obj_in=block_schematized)
-        for l in item.get('recognition_locations', []):
-            geometry = l.get("geometry", None)
-            if geometry:
-                g1 = geojson.loads(geometry)
-                g2 = shape(g1)
-                geometry = g2.wkt
-            location_schematized = RecognitionLocationCreate(
-                name=l.get("street_name", None),
-                geometry=geometry,
-                probability=l["probability"],
-                message_id=msg.id
-            )
-            dao_location.create(db,obj_in=location_schematized)
-        
    
             
 
