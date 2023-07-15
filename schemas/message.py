@@ -23,7 +23,7 @@ class MessageSchema(MessageBase):
     id: UUID
     created_at: datetime 
     recognition_blocks: List[Optional[RecognitionBlock]]
-    recognition_themes: Optional[List[Optional[RecognitionTheme]]]
+    recognition_themes: List[Optional[RecognitionTheme]]
     recognition_locations: List[Optional[RecognitionLocation]]
     approved_block: Optional[str]
     approved_theme: Optional[str]
