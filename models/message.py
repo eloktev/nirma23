@@ -50,6 +50,6 @@ class Message(Base):
             from geoalchemy2.shape import to_shape
             return {"street_name": self.location.location.name, "geometry": to_shape(self.location.location.geometry).wkt}
         except:
-            return None
+            return {"street_name": self.location.location.name}
     
 from geoalchemy2.elements import WKBElement
