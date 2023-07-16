@@ -42,7 +42,7 @@ class ApprovedLocationCreate(BaseModel):
 
 
 class ApprovedLocation(BaseModel):
-    name: str #Location.name
+    street_name: str #Location.name
     geometry: Optional[str] #Location.geometry
 
 
