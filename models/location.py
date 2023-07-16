@@ -39,18 +39,17 @@ class RecognitionLocation(Base):
     
     @hybrid_property
     def geometry(self):
-        if self.Location.geometry:
+        try:
             shape = to_shape(self.location.geometry)
             # print(shape.coords)
             geom = {
                 "type": shape.geom_type,
                 "coordinates": list(shape.coords)[0]
             }
-            print(geom)
-            
             # getattr(wkb_to_shape(self.location.geometry), "__geo_interface__", None)
             return geom
-        return None
+        except:
+            return None
 
 
 class ApprovedLocation(Base):
