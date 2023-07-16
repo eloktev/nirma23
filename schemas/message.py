@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from schemas.document import Document
 from schemas.block import RecognitionBlock, Block
 from schemas.theme import RecognitionTheme
-from schemas.location import RecognitionLocation
+from schemas.location import RecognitionLocation, ApprovedLocation
 
 
 # Shared properties
@@ -27,7 +27,7 @@ class MessageSchema(MessageBase):
     recognition_locations: List[Optional[RecognitionLocation]]
     approved_block: Optional[str]
     approved_theme: Optional[str]
-    approved_location: Any
+    approved_location: Optional[ApprovedLocation]
 
 
     class Config:
