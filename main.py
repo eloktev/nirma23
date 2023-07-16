@@ -1,22 +1,12 @@
-from fastapi import Depends, FastAPI, HTTPException, Form, File, UploadFile
-import uuid
-from datetime import datetime
+from fastapi import Depends, FastAPI
 from sqlalchemy.orm import Session
 from fastapi.middleware.cors import CORSMiddleware
-
-import dao, models, schemas
 from config import settings
-
-from db.database import SessionLocal, engine
-from db.base_class import Base
-from typing import Annotated
 from api.api_v1.api import api_router
 from contextlib import asynccontextmanager
-# Base.metadata.create_all(bind=engine)
-
 import logging 
 import torch
-from services.SOIKA.factfinder import TextClassifier, AddressExtractor
+from services.SOIKA.factfinder import TextClassifier, AddressExtractor, EventDetection
 
 logger = logging.getLogger("gunicorn.error")
 
@@ -29,23 +19,22 @@ ml_models = {}
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Load the ML model
-    logger.info("Start blocks model load")
+    logger.info("Start model loading")
     device_type = torch.device('cpu')
     ml_models["blocks_model"] = TextClassifier(
         repository_id="Sandrro/text_to_function_v2",
         number_of_categories=3,
         device_type=device_type,
     )
-    logger.info("Start themes model load")
     ml_models["themes_model"] =  TextClassifier(
         repository_id="Sandrro/text_to_subfunction_v10",
         number_of_categories=3,
         device_type=device_type,
     )
-    logger.info("Start address model load")
     ml_models["address_model"] = AddressExtractor()
 
+    ml_models["event_model"] = EventDetection()
+    logger.info("Models loaded")
     yield
     # Clean up the ML models and release the resources
     ml_models.clear()
@@ -74,6 +63,7 @@ def drop_all_data(db: Session = Depends(deps.get_db)):
     from models.block import Block, RecognitionBlock, ApprovedBlock
     from models.theme import Theme, RecognitionTheme, ApprovedTheme
     from models.location import Location, RecognitionLocation, ApprovedLocation
+    from models.events import Events
     db.query(RecognitionTheme).delete()
     db.query(RecognitionBlock).delete()
     db.query(RecognitionLocation).delete()
@@ -84,6 +74,7 @@ def drop_all_data(db: Session = Depends(deps.get_db)):
     db.query(Location).delete()
     db.query(ApprovedBlock).delete()
     db.query(Block).delete()
+    db.query(Events).delete()
     db.query(Document).delete()
     db.commit()
     return None
