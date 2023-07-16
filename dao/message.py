@@ -8,7 +8,7 @@ from schemas.message import MessageCreate
 from sqlalchemy import and_, or_, not_
 from datetime import datetime
 import logging
-logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
+# logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 class MessageDAO(BaseDAO[Message, MessageCreate, MessageCreate]):
     
     def set_approved_block(self,  db: Session, *, message_id: UUID, approved_block_id: UUID) -> Optional[Message]:

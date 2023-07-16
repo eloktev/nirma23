@@ -10,7 +10,7 @@ from api import deps
 from fastapi.responses import Response, FileResponse, StreamingResponse
 from models.document import DocumentStatus
 import pandas, io
-import logging
+from main import logger
 
 router = APIRouter()
 
@@ -138,7 +138,7 @@ def approve_location(message_id: UUID,
     message = dao.dao_message.get(db, id=message_id)
     if not message:
         raise HTTPException(status_code=404, detail="Message not found. Check that MESSAGE id is passed, not Document")
-    logging.info(f"Location is {location.geometry}")
+    logger.info(f"Location is {location.geometry}")
     a_location_obj = schemas.location.ApprovedLocationCreate(message_id=message_id, name = location.name, geometry=location.geometry)
     doc = dao.dao_document.get(db, id=message.document_id)
     if not dao.dao_document.has_approved_messages(db, id=doc.id):
