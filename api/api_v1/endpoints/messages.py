@@ -10,6 +10,8 @@ from api import deps
 from fastapi.responses import Response, FileResponse, StreamingResponse
 from models.document import DocumentStatus
 import pandas, io
+import logging
+logger = logging.getLogger("gunicorn.error")
 
 router = APIRouter()
 
@@ -137,8 +139,7 @@ def approve_location(message_id: UUID,
     message = dao.dao_message.get(db, id=message_id)
     if not message:
         raise HTTPException(status_code=404, detail="Message not found. Check that MESSAGE id is passed, not Document")
-    from main import logger
-    logger.info(f"Location is {location.geometry}")
+    logger.info(f"Location is {location.geometry}, type:{type(location.geometry)}")
     a_location_obj = schemas.location.ApprovedLocationCreate(message_id=message_id, name = location.name, geometry=location.geometry)
     doc = dao.dao_document.get(db, id=message.document_id)
     if not dao.dao_document.has_approved_messages(db, id=doc.id):
@@ -147,4 +148,5 @@ def approve_location(message_id: UUID,
     db.refresh(message)
     if dao.dao_document.is_every_approved_messages(db, id=doc.id):
         dao.dao_document.set_marked_up(db, uuid=doc.id)
+    logger.info(f"Message is {message}, approved location:{message.approved_location}")
     return message
