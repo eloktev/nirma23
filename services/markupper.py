@@ -13,13 +13,13 @@ import pandas as pd
 # import torch
 import warnings
 warnings.simplefilter('ignore')
-# import logging
+import logging
+
+logger = logging.getLogger("gunicorn.error")
 
           
 def parse_document(db, document: Document):
-    """
-    Mock parser
-    """
+    logger.info(f"start document {document.name} markup")
     from main import ml_models
     dao_document.set_marking_up(db, uuid=document.id)
     df = pd.read_excel(io.BytesIO(document.file))
@@ -29,10 +29,11 @@ def parse_document(db, document: Document):
 
     df[['blocks','block_probs']] = pd.DataFrame(df['Текст'].progress_map(lambda x: ml_models['blocks_model'].run(x)).to_list())
 
-    
+    logger.info(f"{document.name} blocks marked up")
     df[['themes','theme_probs']] = pd.DataFrame(df['Текст'].progress_map(lambda x: ml_models['themes_model'].run(x)).to_list())
-
+    logger.info(f"{document.name} themes marked up")
     df = ml_models['address_model'].run(df,  text_column='Текст')
+    logger.info(f"{document.name} locations marked up")
     df["Дата и время"] = ""
     df["message_id"] = ""
     df["cats"] = ""
@@ -90,13 +91,14 @@ def parse_document(db, document: Document):
         dao_location.create(db,obj_in=location_schematized)
 
     df = df.rename(columns = {"Текст": "Текст комментария"})
-    messages, events, connections = ml_models['event_model'].run(df, 'SOIKA/data/raw/population.geojson', 'Санкт-Петербург', 32636, min_event_size=3)
+    messages, events, connections = ml_models['event_model'].run(df, 'services/SOIKA/data/raw/population.geojson', 'Санкт-Петербург', 32636, min_event_size=3)
     events_schematized = EventsCreate(
                 document=document,
                 file_events= geojson.dumps(geojson.loads(events.to_json())).encode(),
                 file_messages= geojson.dumps(geojson.loads(messages.to_json())).encode(),
                 file_connections= geojson.dumps(geojson.loads(connections.to_json())).encode()
     )
+    logger.info(f"{document.name} mark up finished")
     dao_events.create(db,obj_in=events_schematized)
             
    
