@@ -6,7 +6,8 @@ from pydantic.networks import EmailStr
 from sqlalchemy.orm import Session
 from fastapi.responses import Response, FileResponse
 from services.markupper import parse_document
-
+import logging
+logger = logging.getLogger("gunicorn.error")
 import dao, models, schemas
 from api import deps
 # from app.core.config import settings
