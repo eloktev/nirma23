@@ -33,7 +33,8 @@ def parse_document(db, document: Document):
     df[['themes','theme_probs']] = pd.DataFrame(df['Текст'].progress_map(lambda x: ml_models['themes_model'].run(x)).to_list())
 
     
-    df[['street', 'street_prob', 'Текст комментария_normalized']] = df['Текст'].progress_apply(lambda t: ml_models['address_model'].run(t))
+    # df[['street', 'street_prob', 'Текст комментария_normalized']] = df['Текст'].progress_apply(lambda t: ml_models['address_model'].run(t,  text_column='Текст'))
+
 
     for index, row in df.iterrows():
         msg_obj = MessageCreate(
@@ -86,14 +87,16 @@ def parse_document(db, document: Document):
             dao_location.create(db,obj_in=location_schematized)
 
 
-    with open('test_events.geojson', 'rb') as e:
-        with open('test_messages.geojson', 'rb') as m:
-            events_schematized = EventsCreate(
-                document=document,
-                file_events= geojson.dumps(geojson.loads(e.read())).encode() ,
-                file_messages= geojson.dumps(geojson.loads(m.read())).encode()
-                )
-            dao_events.create(db,obj_in=events_schematized)
+
+    # messages, events, connections = ml_models['event_model'].run(target_texts, 'Санкт-Петербург', 32636, min_event_size=3)
+    # with open('test_events.geojson', 'rb') as e:
+    #     with open('test_messages.geojson', 'rb') as m:
+    #         events_schematized = EventsCreate(
+    #             document=document,
+    #             file_events= geojson.dumps(geojson.loads(e.read())).encode() ,
+    #             file_messages= geojson.dumps(geojson.loads(m.read())).encode()
+    #             )
+    #         dao_events.create(db,obj_in=events_schematized)
 
    
             
