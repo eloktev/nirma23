@@ -7,13 +7,13 @@ from schemas.events import EventsCreate
 from dao import dao_block, dao_theme, dao_message,  dao_location, dao_document, dao_events
 from time import sleep
 import io, json
-import geojson
-from shapely.geometry import shape
+# import geojson
+# from shapely.geometry import shape
 import pandas as pd
-import torch
+# import torch
 import warnings
 warnings.simplefilter('ignore')
-import logging
+# import logging
 
           
 def parse_document(db, document: Document):
@@ -33,7 +33,8 @@ def parse_document(db, document: Document):
     df[['themes','theme_probs']] = pd.DataFrame(df['Текст'].progress_map(lambda x: ml_models['themes_model'].run(x)).to_list())
 
     
-    # df[['street', 'street_prob', 'Текст комментария_normalized']] = df['Текст'].progress_apply(lambda t: ml_models['address_model'].run(t,  text_column='Текст'))
+    df[['street', 'street_prob', 'Текст комментария_normalized']] = df['Текст'].progress_apply(lambda t: t)
+    df = ml_models['address_model'].run(t,  text_column='Текст')
 
 
     for index, row in df.iterrows():
@@ -42,13 +43,9 @@ def parse_document(db, document: Document):
             document = document
         )
         msg = dao_message.create(db, obj_in=msg_obj)
-        blocks = row['blocks']
-        blocks = blocks.split(';')
-        blocks = [block.strip() for block in blocks]
+        blocks = [block.strip() for block in row['blocks'].split(';')]
 
-        block_probs = row['block_probs']
-        block_probs = block_probs.split(';')
-        block_probs = [float(block_prob.strip()) for block_prob in block_probs]
+        block_probs = [float(block_prob.strip()) for block_prob in row['block_probs'].split(';')]
         for i in range(len(blocks)):
             block_schematized = RecognitionBlockCreate(
                 name=blocks[i],
@@ -57,13 +54,9 @@ def parse_document(db, document: Document):
             )
             dao_block.create(db,obj_in=block_schematized)
 
-        themes = row['themes']
-        themes = themes.split(';')
-        themes = [theme.strip() for theme in themes]
+        themes = [theme.strip() for theme in row['themes'].split(';')]
 
-        theme_probs = row['theme_probs']
-        theme_probs = theme_probs.split(';')
-        theme_probs = [float(theme_prob.strip()) for theme_prob in theme_probs]
+        theme_probs = [float(theme_prob.strip()) for theme_prob in row['theme_probs'].split(';')]
         for i in range(len(themes)):
             theme_schematized = RecognitionThemeCreate(
                 name=themes[i],
@@ -72,19 +65,27 @@ def parse_document(db, document: Document):
             )
             dao_theme.create(db,obj_in=theme_schematized)
         
-        street = row['street']
-        street_prob = row['street_prob']
-        if type(street) is str and type(street_prob) in [int, float]:
+        
+        geo_level = row['level']
+        if geo_level == "street":
+            street = row["street"].capitalize() if row["street"] else ""
+            prob = row['Score']
+        else:
+            prob = None
+            street = None
+        geometry = str(row['geometry']) if row['geometry'] else None
+
             # g1 = geojson.loads(geometry)
             # g2 = shape(g1)
             # geometry = g2.wkt
-            location_schematized = RecognitionLocationCreate(
+            
+        location_schematized = RecognitionLocationCreate(
                 name=street,
-                geometry=None,
-                probability=street_prob,
+                geometry=geometry,
+                probability=prob,
                 message_id=msg.id
-            )
-            dao_location.create(db,obj_in=location_schematized)
+        )
+        dao_location.create(db,obj_in=location_schematized)
 
 
 
