@@ -32,9 +32,7 @@ def parse_document(db, document: Document):
     
     df[['themes','theme_probs']] = pd.DataFrame(df['Текст'].progress_map(lambda x: ml_models['themes_model'].run(x)).to_list())
 
-    
-    df[['street', 'street_prob', 'Текст комментария_normalized']] = df['Текст'].progress_apply(lambda t: t)
-    df = ml_models['address_model'].run(t,  text_column='Текст')
+    df = ml_models['address_model'].run(df,  text_column='Текст')
 
 
     for index, row in df.iterrows():
