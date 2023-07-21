@@ -45,7 +45,7 @@ def parse_document(db, document: Document):
         )
         msg = dao_message.create(db, obj_in=msg_obj)
         blocks = [block.strip() for block in row['blocks'].split(';')]
-        df.iloc[index, df.columns.get_loc('message_id')] = msg.id
+        df.iloc[index, df.columns.get_loc('message_id')] = str(msg.id)
         df.iloc[index, df.columns.get_loc('Дата и время')] = msg.created_at.strftime("%Y.%m.%d %H:%M")
         df.iloc[index, df.columns.get_loc('cats')] = blocks[0] if blocks else None
         block_probs = [float(block_prob.strip()) for block_prob in row['block_probs'].split(';')]
