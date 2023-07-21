@@ -23,7 +23,7 @@ class LocalSettings(CommonSettings):
     SQLALCHEMY_DATABASE_URI: Optional[str] = "sqlite:///./sql_app.db"
 
 class StageSettings(CommonSettings):
-    SQLALCHEMY_DATABASE_URI: Optional[str] = f"postgresql://{os.get_env('POSTGRES_USER')}:{os.get_env('POSTGRES_PASSWORD')}@{os.get_env('POSTGRES_HOST')}:5432/{os.get_env('POSTGRES_DB')}"
+    SQLALCHEMY_DATABASE_URI: Optional[str] = f"postgresql://{os.getenv('POSTGRES_USER')}:{os.getenv('POSTGRES_PASSWORD')}@{os.getenv('POSTGRES_HOST')}:5432/{os.getenv('POSTGRES_DB')}"
 
 
 settings = StageSettings()

@@ -31,7 +31,7 @@ async def lifespan(app: FastAPI):
         number_of_categories=3,
         device_type=device_type,
     )
-    # ml_models["address_model"] = Geocoder()
+    ml_models["address_model"] = Geocoder()
 
     ml_models["event_model"] = EventDetection()
     logger.info("Models loaded")
