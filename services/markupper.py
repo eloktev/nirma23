@@ -93,15 +93,11 @@ def parse_document(db, document: Document):
     messages, events, connections = ml_models['event_model'].run(df, 'SOIKA/data/raw/population.geojson', 'Санкт-Петербург', 32636, min_event_size=3)
     events_schematized = EventsCreate(
                 document=document,
-                file_events= geojson.dumps(geojson.loads(events.to_json())).encode() ,
-                file_messages= geojson.dumps(geojson.loads(messages.to_json())).encode()
+                file_events= geojson.dumps(geojson.loads(events.to_json())).encode(),
+                file_messages= geojson.dumps(geojson.loads(messages.to_json())).encode(),
                 file_connections= geojson.dumps(geojson.loads(connections.to_json())).encode()
     )
     dao_events.create(db,obj_in=events_schematized)
-
-    # messages, events, connections = ml_models['event_model'].run(target_texts, 'Санкт-Петербург', 32636, min_event_size=3)
-    # with open('test_events.geojson', 'rb') as e:
-    #     with open('test_messages.geojson', 'rb') as m:
             
    
             
