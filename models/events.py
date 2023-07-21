@@ -18,3 +18,4 @@ class Events(Base):
 
     file_events = Column(LargeBinary)
     file_messages = Column(LargeBinary)
+    file_connections = Column(LargeBinary)

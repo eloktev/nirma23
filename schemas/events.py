@@ -7,6 +7,7 @@ from schemas.document import Document
 class EventsBase(BaseModel):
     file_events: bytes
     file_messages: bytes
+    file_connections: bytes
 
 
 class EventsCreate(EventsBase):

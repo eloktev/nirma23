@@ -33,8 +33,9 @@ def parse_document(db, document: Document):
     df[['themes','theme_probs']] = pd.DataFrame(df['Текст'].progress_map(lambda x: ml_models['themes_model'].run(x)).to_list())
 
     df = ml_models['address_model'].run(df,  text_column='Текст')
-
-
+    df["Дата и время"] = ""
+    df["message_id"] = ""
+    df["cats"] = ""
     for index, row in df.iterrows():
         msg_obj = MessageCreate(
             text= row['Текст'],
@@ -42,8 +43,11 @@ def parse_document(db, document: Document):
         )
         msg = dao_message.create(db, obj_in=msg_obj)
         blocks = [block.strip() for block in row['blocks'].split(';')]
-
+        df.iloc[index, df.columns.get_loc('message_id')] = msg.id
+        df.iloc[index, df.columns.get_loc('Дата и время')] = msg.created_at.strftime("%Y.%m.%d %H:%M")
+        df.iloc[index, df.columns.get_loc('cats')] = blocks[0] if blocks else None
         block_probs = [float(block_prob.strip()) for block_prob in row['block_probs'].split(';')]
+        
         for i in range(len(blocks)):
             block_schematized = RecognitionBlockCreate(
                 name=blocks[i],
@@ -85,18 +89,20 @@ def parse_document(db, document: Document):
         )
         dao_location.create(db,obj_in=location_schematized)
 
-
+    df = df.rename(columns = {"Текст": "Текст комментария"})
+    messages, events, connections = ml_models['event_model'].run(df, 'SOIKA/data/raw/population.geojson', 'Санкт-Петербург', 32636, min_event_size=3)
+    events_schematized = EventsCreate(
+                document=document,
+                file_events= geojson.dumps(geojson.loads(events.to_json())).encode() ,
+                file_messages= geojson.dumps(geojson.loads(messages.to_json())).encode()
+                file_connections= geojson.dumps(geojson.loads(connections.to_json())).encode()
+    )
+    dao_events.create(db,obj_in=events_schematized)
 
     # messages, events, connections = ml_models['event_model'].run(target_texts, 'Санкт-Петербург', 32636, min_event_size=3)
     # with open('test_events.geojson', 'rb') as e:
     #     with open('test_messages.geojson', 'rb') as m:
-    #         events_schematized = EventsCreate(
-    #             document=document,
-    #             file_events= geojson.dumps(geojson.loads(e.read())).encode() ,
-    #             file_messages= geojson.dumps(geojson.loads(m.read())).encode()
-    #             )
-    #         dao_events.create(db,obj_in=events_schematized)
-
+            
    
             
 
