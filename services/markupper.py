@@ -66,7 +66,7 @@ def parse_document(db, document: Document):
         
         geo_level = row['level']
         if geo_level == "street":
-            street = row["street"].capitalize() if row["street"] else ""
+            street = row["Street"].capitalize() if row["Street"] else ""
             prob = row['Score']
         else:
             prob = None
