@@ -1,6 +1,6 @@
 import secrets
 from typing import Any, Dict, List, Optional, Union
-
+import os
 from pydantic import AnyHttpUrl, BaseSettings, EmailStr, HttpUrl, PostgresDsn, validator
 
 
@@ -23,7 +23,7 @@ class LocalSettings(CommonSettings):
     SQLALCHEMY_DATABASE_URI: Optional[str] = "sqlite:///./sql_app.db"
 
 class StageSettings(CommonSettings):
-    SQLALCHEMY_DATABASE_URI: Optional[str] = "postgresql://postgres:postgres@10.200.0.235:5432/nirma_23"
+    SQLALCHEMY_DATABASE_URI: Optional[str] = f"postgresql://{os.get_env('POSTGRES_USER')}:{os.get_env('POSTGRES_PASSWORD')}@{os.get_env('POSTGRES_HOST')}:5432/{os.get_env('POSTGRES_DB')}"
 
 
 settings = StageSettings()
