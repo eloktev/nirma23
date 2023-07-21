@@ -1,3 +1,0 @@
-[submodule "services/SOIKA"]
-	path = services/SOIKA
-	url = https://github.com/Text-Analytics/SOIKA.git
