@@ -14,6 +14,7 @@ import pandas as pd
 import warnings
 warnings.simplefilter('ignore')
 import logging
+import geojson
 
 logger = logging.getLogger("gunicorn.error")
 
