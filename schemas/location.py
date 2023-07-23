@@ -43,6 +43,6 @@ class ApprovedLocationCreate(BaseModel):
 
 class ApprovedLocation(BaseModel):
     street_name: str #Location.name
-    geometry_dict: Optional[Any] #Location.geometry
+    geometry: Optional[Any] #Location.geometry
 
 
