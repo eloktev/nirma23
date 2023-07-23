@@ -61,7 +61,7 @@ class ApprovedLocation(Base):
     message = relationship('Message', back_populates='location')
 
     @hybrid_property
-    def geometry_dict(self):
+    def geometry(self):
         return self.location.geometry
     
 
