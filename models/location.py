@@ -62,6 +62,6 @@ class ApprovedLocation(Base):
 
     @hybrid_property
     def geometry_dict(self):
-        return self.location.geomtery
+        return self.location.geometry
     
 
