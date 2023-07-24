@@ -79,7 +79,7 @@ def export_document_messages(document_id: UUID,
         locations = msg.recognition_locations
         location_str = ""
         for location in locations:
-            location_probabilty = "%.2f" % round(location.probability, 2) if location.probabilty else None
+            location_probabilty = "%.2f" % round(location.probability, 2) if location.probability else None
             location_str += f"{location.street_name} ({location_probabilty} %) "
 
         data["Локация"].append(location_str)
