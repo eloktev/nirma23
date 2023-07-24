@@ -67,19 +67,19 @@ def export_document_messages(document_id: UUID,
         blocks = msg.recognition_blocks
         block_str = ""
         for block in blocks:
-            block_probabilty = "%.2f" % round(block.probability, 2)
+            block_probabilty = "%.2f" % round(block.probability, 2) if block.probability else None
             block_str += f"{block.name} ({block_probabilty} %) "
         data["Блок"].append(block_str)
         themes = msg.recognition_themes
         theme_str = ""
         for theme in themes:
-            theme_probabilty = "%.2f" % round(theme.probability, 2)
+            theme_probabilty = "%.2f" % round(theme.probability, 2) if theme.probability else None
             theme_str += f"{theme.name} ({theme_probabilty} %) "
         data["Тема"].append(theme_str)
         locations = msg.recognition_locations
         location_str = ""
         for location in locations:
-            location_probabilty = "%.2f" % round(location.probability, 2)
+            location_probabilty = "%.2f" % round(location.probability, 2) if location.probabilty else None
             location_str += f"{location.street_name} ({location_probabilty} %) "
 
         data["Локация"].append(location_str)
