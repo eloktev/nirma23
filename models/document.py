@@ -18,6 +18,7 @@ class DocumentStatus(str, enum.Enum):
     markup = "markedup"
     approving = "partially_approved"
     approve = "approved"
+    failed = "failed"
 
 class Document(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid4)
