@@ -61,7 +61,7 @@ class MessageDAO(BaseDAO[Message, MessageCreate, MessageCreate]):
 
     def create(self, db: Session, *, obj_in: MessageCreate) -> Message:
         message = Message(
-            created_at=datetime.now(),
+            created_at=obj_in.created_at,
             text=obj_in.text,
             document_id = obj_in.document.id
         )
