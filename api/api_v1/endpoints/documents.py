@@ -6,7 +6,7 @@ from pydantic.networks import EmailStr
 from sqlalchemy.orm import Session
 from fastapi.responses import Response, FileResponse
 from services.markupper import parse_document
-import pathlib
+import os
 import logging
 logger = logging.getLogger("gunicorn.error")
 import dao, models, schemas
@@ -55,8 +55,8 @@ def get_document_file(document_id: str, db: Session = Depends(deps.get_db),
     Retrieve document file by id.
     """
     doc = dao.dao_document.get(db, id=document_id)
-    ext = pathlib.Path(doc.name)
-    return Response(doc.file,  headers={'Content-Disposition': f'attachment; filename="{doc.id}{ext}"'})
+    file_name, file_extension = os.path.splitext("ext")
+    return Response(doc.file,  headers={'Content-Disposition': f'attachment; filename="File{file_extension}"'})
 
 
 @router.delete("/{document_id}", status_code=201)
