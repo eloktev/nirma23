@@ -16,6 +16,42 @@ from api import deps
 
 router = APIRouter()
 
+MAP = {
+    "а":"a",
+    "б":"b",
+    "в":"v",
+    "г":"g",
+    "д":"d",
+    "е":"e",
+    "ё":"yo",
+    "ж":"zh",
+    "з":"z",
+    "и":"i",
+    "й":"ij",
+    "к":"k",
+    "л":"l",
+    "м":"m",
+    "н":"n",
+    "о":"o",
+    "п":"p",
+    "р":"r",
+    "с":"s",
+    "т":"t",
+    "у":"u",
+    "ф":"f",
+    "х":"h",
+    "ц":"tz",
+    "ч":"ch",
+    "ш":"sh",
+    "щ":"tch",
+    "ь":"",
+    "ы":"y",
+    "ъ":"",
+    "э":"e",
+    "ю":"yu",
+    "я":"ya", 
+}
+
 @router.post("", response_model=schemas.Document)
 async def create_document(file: UploadFile, 
                           background_tasks: BackgroundTasks,
@@ -55,8 +91,14 @@ def get_document_file(document_id: str, db: Session = Depends(deps.get_db),
     Retrieve document file by id.
     """
     doc = dao.dao_document.get(db, id=document_id)
-    file_name, file_extension = os.path.splitext("ext")
-    return Response(doc.file,  headers={'Content-Disposition': f'attachment; filename="File{file_extension}"'})
+    file_name, file_extension = os.path.splitext(doc.name)
+    file_name_safe = ""
+    for c in file_name.upper():
+        if c in MAP:
+            file_name_safe += MAP[c]
+        else:
+            file_name_safe += c
+    return Response(doc.file,  headers={'Content-Disposition': f'attachment; filename="{file_name_safe}{file_extension}"'})
 
 
 @router.delete("/{document_id}", status_code=201)
