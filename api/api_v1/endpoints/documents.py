@@ -54,7 +54,7 @@ def get_document_file(document_id: str, db: Session = Depends(deps.get_db),
     Retrieve document file by id.
     """
     doc = dao.dao_document.get(db, id=document_id)
-    return Response(doc.file,  headers={'Content-Disposition': 'attachment; filename="%s"' %(doc.name)})
+    return Response(doc.file,  headers={'Content-Disposition': 'attachment; filename="%s"' %(doc.name.encode())})
 
 
 @router.delete("/{document_id}", status_code=201)
