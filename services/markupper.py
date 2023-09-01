@@ -109,7 +109,7 @@ def parse_document(db, document: Document):
             
     except Exception as e:
         logger.error(e)
-        dao_document.set_failed(db, uuid=document.id)
+        # dao_document.set_failed(db, uuid=document.id)
     
     return None
 
