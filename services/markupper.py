@@ -40,7 +40,7 @@ def parse_document(db, document: Document):
         df["message_id"] = ""
         df["cats"] = ""
         for index, row in df.iterrows():
-            logger.info(type(row['Дата и время']))
+            logger.error(type(row['Дата создания']))
             msg_obj = MessageCreate(
                 created_at = row['Дата и время'],
                 text= row['Текст'],
