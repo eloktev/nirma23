@@ -41,6 +41,14 @@ class DocumentDAO(BaseDAO[Document, DocumentCreate, DocumentCreate]):
         db.commit()
         db.refresh(doc)
         return doc
+    
+    def set_failed(self, db: Session, *, uuid: str) -> Document:
+        doc = db.query(Document).filter((Document.id == uuid)).first()
+        doc.status = DocumentStatus.failed
+        db.add(doc)
+        db.commit()
+        db.refresh(doc)
+        return doc
 
     def set_marked_up(self, db: Session, *, uuid: str) -> Document:
         doc = db.query(Document).filter((Document.id == uuid)).first()
