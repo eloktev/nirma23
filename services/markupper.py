@@ -47,36 +47,65 @@ def parse_document(db, document: Document):
                 document = document
             )
             msg = dao_message.create(db, obj_in=msg_obj)
-            blocks = [block.strip() for block in row['blocks'].split(';')]
-            df.iloc[index, df.columns.get_loc('message_id')] = str(msg.id)
-            df.iloc[index, df.columns.get_loc('Дата и время')] = msg.created_at.strftime("%Y.%m.%d %H:%M")
-            df.iloc[index, df.columns.get_loc('cats')] = blocks[0] if blocks else None
-            block_probs = [float(block_prob.strip()) for block_prob in row['block_probs'].split(';')]
-            
-            for i in range(len(blocks)):
-                block_schematized = RecognitionBlockCreate(
-                    name=blocks[i],
-                    probability=block_probs[i],
-                    message_id=msg.id
-                )
-                dao_block.create(db,obj_in=block_schematized)
+            blocks = row['blocks']
+            if pd.isna(blocks):
+                logger.error(f"Empty blocks for message: {msg.text}")
+                continue
+            else:
+                try:
+                    blocks = [block.strip() for block in row['blocks'].split(';')]
+                    df.iloc[index, df.columns.get_loc('message_id')] = str(msg.id)
+                    df.iloc[index, df.columns.get_loc('Дата и время')] = msg.created_at.strftime("%Y.%m.%d %H:%M")
+                    df.iloc[index, df.columns.get_loc('cats')] = blocks[0] if blocks else None
+                    block_probs = [float(str(block_prob).strip()) for block_prob in row['block_probs'].split(';')]
+                except AttributeError:
+                    logger.error(f"blocks:  { row['blocks']}")
+                    logger.error(f"block_probs:  { row['block_probs']}")
+                    blocks = [row['blocks'] ]
+                    df.iloc[index, df.columns.get_loc('message_id')] = str(msg.id)
+                    df.iloc[index, df.columns.get_loc('Дата и время')] = msg.created_at.strftime("%Y.%m.%d %H:%M")
+                    df.iloc[index, df.columns.get_loc('cats')] = blocks[0] if blocks else None
+                    block_probs = [float(row['block_probs'])]
+                
+                for i in range(len(blocks)):
+                    block_schematized = RecognitionBlockCreate(
+                        name=blocks[i],
+                        probability=block_probs[i],
+                        message_id=msg.id
+                    )
+                    dao_block.create(db,obj_in=block_schematized)
 
-            themes = [theme.strip() for theme in row['themes'].split(';')]
+            themes = row['themes']
+            if pd.isna(themes):
+                logger.error(f"Empty themes for message: {msg.text}")
+                continue
+            else:
+                try:
+                    themes = [theme.strip() for theme in themes.split(';')]
 
-            theme_probs = [float(theme_prob.strip()) for theme_prob in row['theme_probs'].split(';')]
-            for i in range(len(themes)):
-                theme_schematized = RecognitionThemeCreate(
-                    name=themes[i],
-                    probability=theme_probs[i],
-                    message_id=msg.id
-                )
-                dao_theme.create(db,obj_in=theme_schematized)
+                    theme_probs = [float(str(theme_prob).strip()) for theme_prob in row['theme_probs'].split(';')]
+                except AttributeError:
+                    logger.error(f"themes:  { themes}")
+                    logger.error(f"theme_probs: {row['theme_probs']}")
+                    
+                    themes = [row['themes'].strip()]
+                    theme_probs = [float(row['theme_probs'])]
+                for i in range(len(themes)):
+                    theme_schematized = RecognitionThemeCreate(
+                        name=themes[i],
+                        probability=theme_probs[i],
+                        message_id=msg.id
+                    )
+                    dao_theme.create(db,obj_in=theme_schematized)
             
             
             geo_level = row['level']
             if geo_level == "street":
                 street = row["Street"].capitalize() if row["Street"] else ""
                 prob = row['Score']
+            # elif geo_level == "street":
+            #     street = row["Street"].capitalize() if row["Street"] else ""
+            #     prob = row['Score']
             else:
                 prob = None
                 street = None

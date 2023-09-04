@@ -93,7 +93,7 @@ def get_document_file(document_id: str, db: Session = Depends(deps.get_db),
     doc = dao.dao_document.get(db, id=document_id)
     file_name, file_extension = os.path.splitext(doc.name)
     file_name_safe = ""
-    for c in file_name.upper():
+    for c in file_name.lower():
         if c in MAP:
             file_name_safe += MAP[c]
         else:
