@@ -14,7 +14,7 @@ class Message(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid4)
     created_at = Column(DateTime)
     text = Column(String)
-    external_id = Column(String)
+    external_id = Column(String, nullable=True)
     
     document_id = Column(UUID(as_uuid=True), ForeignKey('document.id'))
     document = relationship('Document', back_populates='messages')
