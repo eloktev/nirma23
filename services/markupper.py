@@ -19,6 +19,7 @@ import geojson
 logger = logging.getLogger("gunicorn.error")
 
 class NoParsingFilter(logging.Filter):
+    patterns = ["block_not_found"]
     def filter(self, record):
         return not "blob" in record.getMessage()
 

@@ -61,7 +61,7 @@ def export_document_messages(document_id: UUID,
     for msg in messages:
         data["Дата создания"].append(msg.created_at)
         data["id"].append(msg.id)
-        data["external_ID"].append(msg.external_ID if msg.external_ID else "")
+        data["external_ID"].append(msg.external_id if msg.external_id else "")
         data["Текст"].append(msg.text)
         data["Утвержденный блок"].append(msg.approved_block)
         data["Утвержденная тема"].append(msg.approved_theme)
