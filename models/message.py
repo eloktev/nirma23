@@ -46,6 +46,8 @@ class Message(Base):
     
     @hybrid_property
     def approved_location(self):
+        if self.location is None:
+            return None
         try:
             from geoalchemy2.shape import to_shape
             return {"street_name": self.location.location.name, "geometry": to_shape(self.location.location.geometry).wkt}
