@@ -18,6 +18,12 @@ import geojson
 
 logger = logging.getLogger("gunicorn.error")
 
+class NoParsingFilter(logging.Filter):
+    def filter(self, record):
+        return not "blob" in record.getMessage()
+
+logger.addFilter(NoParsingFilter())
+
           
 def parse_document(db, document: Document):
     logger.info(f"start document {document.name} markup")
