@@ -63,7 +63,8 @@ class MessageDAO(BaseDAO[Message, MessageCreate, MessageCreate]):
         message = Message(
             created_at=obj_in.created_at,
             text=obj_in.text,
-            document_id = obj_in.document.id
+            document_id = obj_in.document.id,
+            external_id = obj_in.external_id
         )
         db.add(message)
         db.commit()

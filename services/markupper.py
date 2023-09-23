@@ -48,7 +48,8 @@ def parse_document(db, document: Document):
         msg_obj = MessageCreate(
             created_at = row['Дата создания'],
             text= row['Текст'],
-            document = document
+            document = document,
+            external_id = row['ID']
         )
         msg = dao_message.create(db, obj_in=msg_obj)
         blocks = row['blocks']

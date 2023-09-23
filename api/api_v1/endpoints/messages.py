@@ -48,7 +48,8 @@ def export_document_messages(document_id: UUID,
     messages = dao.dao_message.get_by_file_id(db, document_id=document_id)
     data = {
         "Дата создания": [],
-        "ID": [],
+        "id": [],
+        "external_ID": [],
         "Текст": [],
         "Утвержденный блок": [],
         "Утвержденная тема": [],
@@ -59,7 +60,8 @@ def export_document_messages(document_id: UUID,
     }
     for msg in messages:
         data["Дата создания"].append(msg.created_at)
-        data["ID"].append(msg.id)
+        data["id"].append(msg.id)
+        data["external_ID"].append(msg.external_ID)
         data["Текст"].append(msg.text)
         data["Утвержденный блок"].append(msg.approved_block)
         data["Утвержденная тема"].append(msg.approved_theme)

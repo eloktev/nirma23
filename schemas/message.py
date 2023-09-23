@@ -12,6 +12,7 @@ from schemas.location import RecognitionLocation, ApprovedLocation
 # Shared properties
 class MessageBase(BaseModel):
     text: str
+    external_id: Optional[str]
 
 
 class MessageCreate(MessageBase):
