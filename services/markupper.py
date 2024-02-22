@@ -42,7 +42,8 @@ def parse_document(db, document: Document):
     df[['themes','theme_probs']] = pd.DataFrame(df['Текст'].progress_map(lambda x: ml_models['themes_model'].run(x)).to_list())
     logger.info(f"{document.name} themes marked up")
     df = ml_models['address_model'].run(df,  text_column='Текст')
-
+    df = df.drop_duplicates(subset='Текст').reset_index()
+    
     with open(f'models_df_{document.name}.pickle', 'wb') as f:
         df.to_pickle(f)
 
@@ -112,8 +113,8 @@ def parse_document(db, document: Document):
         
         
         geo_level = row['level']
-        if not pd.isna(row["Street"]):
-            street = row["Street"].capitalize() if row["Street"] else ""
+        if not pd.isna(row["Location"]):
+            street = row["Location"].capitalize() if row["Location"] else ""
             prob = row['Score']
         # elif geo_level == "street":
         #     street = row["Street"].capitalize() if row["Street"] else ""
